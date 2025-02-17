@@ -1,0 +1,134 @@
+CREATE DATABASE parcial_sis_fact;
+USE parcial_sis_fact;
+
+CREATE TABLE tamano (
+  tamano_id INT AUTO_INCREMENT PRIMARY KEY,
+  codigo_tamano VARCHAR(50) NOT NULL,
+  clasificacion VARCHAR(50) NOT NULL,
+  estado ENUM('Activo','Inactivo') NOT NULL DEFAULT 'Activo',
+  unique_code VARCHAR(50) UNIQUE
+);
+
+INSERT INTO tamano (codigo_tamano, clasificacion, estado, unique_code)
+VALUES
+('T-S',   'Small',               'Activo', 'UQ1'),
+('T-M',   'Medium',              'Activo', 'UQ2'),
+('T-L',   'Large',               'Activo', 'UQ3'),
+('T-XL',  'Extra Large',         'Inactivo', 'UQ4'),
+('T-XXL', 'Extra Extra Large',   'Activo', 'UQ5'),
+('T-XS',  'Extra Small',         'Activo', 'UQ6'),
+('T-CH',  'Chico',               'Activo', 'UQ7'),
+('T-GR',  'Grande',              'Inactivo', 'UQ8'),
+('T-MD',  'Mediano',             'Activo', 'UQ9'),
+('T-UN',  'Universal',           'Activo', 'UQ10');
+
+CREATE TABLE color (
+  color_id INT AUTO_INCREMENT PRIMARY KEY,
+  codigo_color VARCHAR(50) NOT NULL,
+  nombre_color VARCHAR(50) NOT NULL,
+  es_base TINYINT(1) NOT NULL DEFAULT 0,
+  status ENUM('Aprobado','Pendiente','Rechazado') NOT NULL DEFAULT 'Pendiente'
+);
+
+INSERT INTO color (codigo_color, nombre_color, es_base, status)
+VALUES
+('CL-001', 'Rojo',     0, 'Aprobado'),
+('CL-002', 'Azul',     1, 'Pendiente'),
+('CL-003', 'Verde',    0, 'Aprobado'),
+('CL-004', 'Amarillo', 1, 'Rechazado'),
+('CL-005', 'Negro',    1, 'Aprobado'),
+('CL-006', 'Blanco',   1, 'Aprobado'),
+('CL-007', 'Gris',     0, 'Pendiente'),
+('CL-008', 'Morado',   0, 'Aprobado'),
+('CL-009', 'Naranja',  1, 'Pendiente'),
+('CL-010', 'Rosa',     0, 'Aprobado');
+
+CREATE TABLE categorias (
+  categoria_id INT AUTO_INCREMENT PRIMARY KEY,
+  categoria_principal VARCHAR(50) NOT NULL,
+  nombre_categoria VARCHAR(100) NOT NULL,
+  es_visible TINYINT(1) NOT NULL DEFAULT 1,
+  ref_unica VARCHAR(50) UNIQUE
+);
+
+INSERT INTO categorias (categoria_principal, nombre_categoria, es_visible, ref_unica)
+VALUES
+('Ropa',         'Camisas',           1, 'CATUQ1'),
+('Ropa',         'Pantalones',        1, 'CATUQ2'),
+('Ropa',         'Zapatos',           1, 'CATUQ3'),
+('Accesorios',   'Cinturones',        1, 'CATUQ4'),
+('Accesorios',   'Gorras',            1, 'CATUQ5'),
+('Hogar',        'Muebles',           1, 'CATUQ6'),
+('Hogar',        'Electrodomésticos', 1, 'CATUQ7'),
+('Tecnología',   'Celulares',         1, 'CATUQ8'),
+('Tecnología',   'Computadoras',      1, 'CATUQ9'),
+('Deportes',     'Balones',           1, 'CATUQ10');
+
+CREATE TABLE producto (
+  producto_id INT AUTO_INCREMENT PRIMARY KEY,
+  nombre_producto VARCHAR(100) NOT NULL,
+  otros_datos TEXT,
+  tamano_id INT NOT NULL,
+  FOREIGN KEY (tamano_id) REFERENCES tamano(tamano_id),
+  estado ENUM('Activo','Inactivo') NOT NULL DEFAULT 'Activo',
+  en_oferta TINYINT(1) NOT NULL DEFAULT 0
+);
+
+INSERT INTO producto (nombre_producto, otros_datos, tamano_id, estado, en_oferta)
+VALUES
+('Camiseta Deportiva',   'Camiseta para entrenamiento',  1, 'Activo', 0),
+('Pantalón Jeans',       'Pantalón azul de mezclilla',   2, 'Activo', 1),
+('Zapatos Casual',       'Zapatos color negro',          3, 'Activo', 0),
+('Camisa Formal',        'Camisa de manga larga',        4, 'Inactivo', 0),
+('Sudadera',             'Sudadera con capucha',         5, 'Activo', 1),
+('Falda',                'Falda corta de algodón',       6, 'Activo', 0),
+('Blusa',                'Blusa de manga corta',         7, 'Activo', 0),
+('Playera Básica',       'Playera de algodón',           8, 'Inactivo', 1),
+('Pantalón Deportivo',   'Pantalón para correr',         9, 'Activo', 1),
+('Short',                'Short de verano',              10, 'Activo', 0);
+
+CREATE TABLE categoria_de_productos (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  producto_id INT NOT NULL,
+  categoria_id INT NOT NULL,
+  FOREIGN KEY (producto_id) REFERENCES producto(producto_id),
+  FOREIGN KEY (categoria_id) REFERENCES categorias(categoria_id),
+  es_principal TINYINT(1) NOT NULL DEFAULT 0,
+  tag VARCHAR(50) UNIQUE
+);
+
+INSERT INTO categoria_de_productos (producto_id, categoria_id, es_principal, tag)
+VALUES
+(1, 1, 1, 'TAG1'),
+(2, 2, 1, 'TAG2'),
+(3, 3, 1, 'TAG3'),
+(4, 1, 0, 'TAG4'),
+(5, 2, 0, 'TAG5'),
+(6, 1, 1, 'TAG6'),
+(7, 1, 0, 'TAG7'),
+(8, 2, 1, 'TAG8'),
+(9, 3, 0, 'TAG9'),
+(10, 1, 0, 'TAG10');
+
+CREATE TABLE colores_del_producto (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  producto_id INT NOT NULL,
+  color_id INT NOT NULL,
+  FOREIGN KEY (producto_id) REFERENCES producto(producto_id),
+  FOREIGN KEY (color_id) REFERENCES color(color_id),
+  es_primario TINYINT(1) NOT NULL DEFAULT 0,
+  alias_color VARCHAR(50) UNIQUE
+);
+
+INSERT INTO colores_del_producto (producto_id, color_id, es_primario, alias_color)
+VALUES
+(1, 1, 1, 'RojoPrincipal'),
+(2, 2, 1, 'AzulPrincipal'),
+(3, 3, 0, 'VerdeSecundario'),
+(4, 5, 0, 'NegroSecundario'),
+(5, 4, 1, 'AmarilloPpal'),
+(6, 6, 1, 'BlancoPpal'),
+(7, 7, 0, 'GrisSecundario'),
+(8, 8, 0, 'MoradoSecundario'),
+(9, 9, 1, 'NaranjaPpal'),
+(10, 10, 0, 'RosaSecundario');
