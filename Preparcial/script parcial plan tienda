@@ -1,0 +1,94 @@
+CREATE DATABASE parcial_plan_tienda;
+USE parcial_plan_tienda;
+
+CREATE TABLE region (
+  region_code VARCHAR(10) PRIMARY KEY,
+  region_descript VARCHAR(100) NOT NULL,
+  region_status ENUM('Active','Inactive') NOT NULL DEFAULT 'Active',
+  region_tag VARCHAR(50) UNIQUE
+);
+
+INSERT INTO region (region_code, region_descript, region_status, region_tag)
+VALUES
+('R01', 'Región Norte',    'Active',   'RTAG1'),
+('R02', 'Región Sur',      'Active',   'RTAG2'),
+('R03', 'Región Este',     'Inactive', 'RTAG3'),
+('R04', 'Región Oeste',    'Active',   'RTAG4'),
+('R05', 'Región Central',  'Active',   'RTAG5'),
+('R06', 'Región Insular',  'Inactive', 'RTAG6'),
+('R07', 'Región Montaña',  'Active',   'RTAG7'),
+('R08', 'Región Llanura',  'Active',   'RTAG8'),
+('R09', 'Región Rural',    'Active',   'RTAG9'),
+('R10', 'Región Urbana',   'Inactive', 'RTAG10');
+
+CREATE TABLE store (
+  store_code VARCHAR(10) PRIMARY KEY,
+  store_name VARCHAR(100) NOT NULL,
+  store_ytd_sales DECIMAL(10,2) NOT NULL,
+  region_code VARCHAR(10) NOT NULL,
+  FOREIGN KEY (region_code) REFERENCES region(region_code),
+  store_type ENUM('Physical','Online','Mixed') NOT NULL DEFAULT 'Physical',
+  store_active TINYINT(1) NOT NULL DEFAULT 1
+);
+
+INSERT INTO store (store_code, store_name, store_ytd_sales, region_code, store_type, store_active)
+VALUES
+('S01', 'Tienda Norte',   15000.00, 'R01', 'Physical', 1),
+('S02', 'Tienda Sur',     20000.00, 'R02', 'Online',   1),
+('S03', 'Tienda Este',    18000.00, 'R03', 'Mixed',    0),
+('S04', 'Tienda Oeste',   22000.00, 'R04', 'Physical', 1),
+('S05', 'Tienda Central', 30000.00, 'R05', 'Mixed',    1),
+('S06', 'Tienda Insular', 12000.00, 'R06', 'Online',   0),
+('S07', 'Tienda Montaña', 17000.00, 'R07', 'Physical', 1),
+('S08', 'Tienda Llanura', 19000.00, 'R08', 'Mixed',    1),
+('S09', 'Tienda Rural',   16000.00, 'R09', 'Online',   1),
+('S10', 'Tienda Urbana',  25000.00, 'R10', 'Physical', 0);
+
+CREATE TABLE job (
+  job_code VARCHAR(10) PRIMARY KEY,
+  job_description VARCHAR(100) NOT NULL,
+  job_base_pay DECIMAL(10,2) NOT NULL,
+  job_type ENUM('Hourly','Salaried','Contract') NOT NULL DEFAULT 'Hourly',
+  job_unique VARCHAR(50) UNIQUE
+);
+
+INSERT INTO job (job_code, job_description, job_base_pay, job_type, job_unique)
+VALUES
+('J01', 'Gerente General',   2000.00, 'Salaried', 'JOBU1'),
+('J02', 'Vendedor',          1000.00, 'Hourly',   'JOBU2'),
+('J03', 'Cajero',             900.00,  'Hourly',   'JOBU3'),
+('J04', 'Supervisor',        1500.00, 'Salaried', 'JOBU4'),
+('J05', 'Reponedor',          800.00, 'Hourly',   'JOBU5'),
+('J06', 'Cajero Senior',     1100.00, 'Hourly',   'JOBU6'),
+('J07', 'Administrador',     1800.00, 'Salaried', 'JOBU7'),
+('J08', 'Seguridad',          750.00, 'Hourly',   'JOBU8'),
+('J09', 'Limpiador',          600.00, 'Hourly',   'JOBU9'),
+('J10', 'Asistente',         1200.00, 'Contract', 'JOBU10');
+
+CREATE TABLE employee (
+  emp_code VARCHAR(10) PRIMARY KEY,
+  emp_title VARCHAR(50) NOT NULL,
+  emp_lname VARCHAR(50) NOT NULL,
+  emp_fname VARCHAR(50) NOT NULL,
+  emp_initial CHAR(1),
+  emp_dob DATE,
+  job_code VARCHAR(10) NOT NULL,
+  FOREIGN KEY (job_code) REFERENCES job(job_code),
+  store_code VARCHAR(10) NOT NULL,
+  FOREIGN KEY (store_code) REFERENCES store(store_code),
+  emp_status ENUM('Activo','Inactivo') NOT NULL DEFAULT 'Activo',
+  is_fulltime TINYINT(1) NOT NULL DEFAULT 0
+);
+
+INSERT INTO employee (emp_code, emp_title, emp_lname, emp_fname, emp_initial, emp_dob, job_code, store_code, emp_status, is_fulltime)
+VALUES
+('E01', 'Sr.', 'Pérez',   'Carlos', 'C', '1985-03-10', 'J01', 'S01', 'Activo', 1),
+('E02', 'Sra.', 'García',  'María',  'M', '1990-07-22', 'J02', 'S02', 'Activo', 0),
+('E03', 'Srta.','López',   'Ana',    'A', '1995-01-15', 'J03', 'S03', 'Inactivo', 0),
+('E04', 'Sr.', 'Martínez','Juan',   'J', '1982-11-05', 'J04', 'S04', 'Activo', 1),
+('E05', 'Sra.', 'Rodríguez','Laura',  'L', '1988-08-20', 'J05', 'S05', 'Activo', 1),
+('E06', 'Sr.', 'Gómez',   'Pedro',  'P', '1979-02-14', 'J06', 'S06', 'Activo', 0),
+('E07', 'Srta.','Sánchez', 'Claudia','C', '1992-06-30', 'J07', 'S07', 'Activo', 1),
+('E08', 'Sr.', 'Díaz',    'Luis',   'L', '1987-09-12', 'J08', 'S08', 'Activo', 0),
+('E09', 'Sra.', 'Morales', 'Elena',  'E', '1993-04-25', 'J09', 'S09', 'Inactivo', 0),
+('E10', 'Sr.', 'Vargas',  'Diego',  'D', '1984-12-01', 'J10', 'S10', 'Activo', 1);
