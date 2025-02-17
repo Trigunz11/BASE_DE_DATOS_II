@@ -1,0 +1,6 @@
+DESCRIBE tamano;
+DESCRIBE color;
+DESCRIBE categorias;
+DESCRIBE producto;
+DESCRIBE categoria_de_productos;
+DESCRIBE colores_del_producto;
