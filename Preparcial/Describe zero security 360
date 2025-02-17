@@ -1,0 +1,5 @@
+DESCRIBE authentication;
+DESCRIBE user;
+DESCRIBE test;
+DESCRIBE audit_log;
+DESCRIBE payment_method;
